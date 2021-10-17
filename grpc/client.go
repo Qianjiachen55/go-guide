@@ -3,13 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/Qianjiachen55/go-guide/grpc/pb"
+	pb "github.com/Qianjiachen55/go-guide/grpc/proto"
 	"google.golang.org/grpc"
 )
 
 func main()  {
 	//连接服务器
-	conn, err := grpc.Dial(":8972", grpc.WithInsecure())
+	conn, err := grpc.Dial("127.0.0.1:8972", grpc.WithInsecure())
 	if err != nil{
 		fmt.Println("!:",err)
 	}

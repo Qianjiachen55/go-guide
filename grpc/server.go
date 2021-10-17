@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	pb "github.com/Qianjiachen55/go-guide/grpc/pb"
+	pb "github.com/Qianjiachen55/go-guide/grpc/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"net"
@@ -19,7 +19,7 @@ type server struct {
 
 
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
-	fmt.Println(ctx.Value("*"))
+	//fmt.Println(ctx.Value("*"))
 	return &pb.HelloReply{Message: "Hello " + in.Name}, nil
 }
 
