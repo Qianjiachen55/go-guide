@@ -31,5 +31,9 @@ xxx.server
 client
 
 ```shell
+1. 连接服务器
+2. 创建连接客户端
+3. 实例化message对象
+4. 远程调用
 ```
 
