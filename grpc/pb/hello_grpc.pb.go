@@ -62,7 +62,7 @@ type UnsafeGreeterServer interface {
 	mustEmbedUnimplementedGreeterServer()
 }
 
-func RegisterGreeterServer(s grpc.ServiceRegistrar, srv interface{}) {
+func RegisterGreeterServer(s grpc.ServiceRegistrar, srv GreeterServer) {
 	s.RegisterService(&Greeter_ServiceDesc, srv)
 }
 
@@ -97,5 +97,5 @@ var Greeter_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "hello.proto",
+	Metadata: "grpc/pb/hello.proto",
 }

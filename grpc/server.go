@@ -13,9 +13,9 @@ import (
 //	SayHello()
 //}
 type server struct {
-	//pb.UnimplementedGreeterServer
-
+	pb.UnimplementedGreeterServer
 }
+
 
 
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
@@ -31,12 +31,9 @@ func main() {
 		return
 	}
 	s := grpc.NewServer() // 创建gRPC服务器
-	//ser := []serverInterface{&server{}}
-	//reflection.Register(s)
-
 	pb.RegisterGreeterServer(
 		s,
-		server{},
+		&server{},
 	) // 在gRPC服务端注册服务
 
 	reflection.Register(s) //在给定的gRPC服务器上注册服务器反射服务

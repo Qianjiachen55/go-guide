@@ -8,13 +8,12 @@ import (
 )
 
 func main()  {
+	//连接服务器
 	conn, err := grpc.Dial(":8972", grpc.WithInsecure())
 	if err != nil{
 		fmt.Println("!:",err)
 	}
 	defer conn.Close()
-
-	pb.NewGreeterClient(conn)
 
 	c := pb.NewGreeterClient(conn)
 	r,err := c.SayHello(context.Background(),&pb.HelloRequest{Name: "qwer..."})
