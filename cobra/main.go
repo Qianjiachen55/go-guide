@@ -21,34 +21,3 @@ func main() {
 	cmd.Execute()
 }
 
-func demo(num int) int{
-	//     if num == 1 {
-	//         return 1
-	//     }
-	//     if num == 0 {
-	//         return 0
-	//     }
-	//     if num == 2 {
-	//         return 2
-	//     }
-	//     return demo(num - 1) + demo(num - 2)
-	if num == 0 {
-		return 0
-	}
-	if num == 1 {
-		return 1
-	}
-	if num == 2 {
-		return 2
-	}
-	first := 1
-	second := 2
-	var ans int
-	var temp int
-	for i := 3;i<=num;i++ {
-		ans = first + second
-		first.= second
-		second = ans
-	}
-	return ans
-}
