@@ -1,0 +1,6 @@
+{"level":"info","time":"2021-10-21T15:34:10.848+0800","msg":"logger init success"}
+{"level":"panic","time":"2021-10-21T15:34:10.849+0800","msg":"runtime error: integer divide by zero"}
+{"level":"info","time":"2021-10-21T15:35:59.702+0800","msg":"logger init success"}
+{"level":"dpanic","time":"2021-10-21T15:35:59.703+0800","msg":"runtime error: integer divide by zero"}
+{"level":"info","time":"2021-10-21T15:41:45.010+0800","msg":"logger init success"}
+{"level":"dpanic","time":"2021-10-21T15:41:45.012+0800","msg":"runtime error: integer divide by zero"}

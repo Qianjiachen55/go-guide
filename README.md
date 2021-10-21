@@ -10,3 +10,4 @@ go mod tidy
 - cobra
 - gprc
 - viper
+- zap
