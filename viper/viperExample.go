@@ -21,6 +21,8 @@ func main() {
 	}
 	fmt.Println(os.Stderr, "config file: ", viper.ConfigFileUsed())
 	fmt.Println(viper.Get("mysql.ip"))
-	fmt.Println(viper.GetInt("mysql.port"))
+	//var ports interface{}
+	ports := viper.GetStringSlice("mysql.port")
+	fmt.Println(len(ports))
 
 }
