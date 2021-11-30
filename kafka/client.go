@@ -32,7 +32,7 @@ func main()  {
 		wg.Add(1)
 		go func(sarama.PartitionConsumer) {
 			for msg :=range pc.Messages(){
-				fmt.Printf("Partiton:%d offset:%d key:%v value:%v",msg.Partition,msg.Offset,msg.Key,msg.Value)
+				fmt.Printf("Partiton:%d offset:%d key:%s value:%s\n",msg.Partition,msg.Offset,msg.Key,msg.Value)
 			}
 		}(pc)
 	}
