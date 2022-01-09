@@ -3,26 +3,22 @@ package main
 import (
 	"github.com/rabbitmq/amqp091-go"
 	"log"
-
+	"rabbitmq/util"
 )
 
-func failOnError(err error, msg string) {
-	if err != nil {
-		log.Fatalf("%s: %s", msg, err)
-	}
-}
+
 
 
 func main() {
 	// 1. 连接
 
 	conn, err := amqp091.Dial("amqp://guest:guest@localhost:5672/")
-	failOnError(err, "Failed to connect to RabbitMQ")
+	util.FailOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
 	// 2. 创建通道
 	ch, err := conn.Channel()
-	failOnError(err, "Failed to open a channel")
+	util.FailOnError(err, "Failed to open a channel")
 	defer ch.Close()
 
 	// 3. 声明发送的队列，讲消息发布到队列
@@ -34,7 +30,7 @@ func main() {
 		false,
 		nil,
 	)
-	failOnError(err, "Failed to declare a queue")
+	util.FailOnError(err, "Failed to declare a queue")
 	body := "Hello World!"
 	err = ch.Publish(
 		"",
@@ -56,7 +52,7 @@ func main() {
 		false,
 		nil,
 	)
-	failOnError(err, "Failed to declare a consumer")
+	util.FailOnError(err, "Failed to declare a consumer")
 
 	forever := make(chan bool)
 
