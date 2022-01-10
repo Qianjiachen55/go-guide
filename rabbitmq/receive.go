@@ -12,8 +12,7 @@ import (
 func main() {
 	// 1. 连接
 
-	conn, err := amqp091.Dial("amqp://guest:guest@localhost:5672/")
-	util.FailOnError(err, "Failed to connect to RabbitMQ")
+	conn := util.GetConn()
 	defer conn.Close()
 
 	// 2. 创建通道
