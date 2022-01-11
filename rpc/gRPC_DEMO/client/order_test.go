@@ -14,3 +14,7 @@ func TestGetOrder(t *testing.T) {
 func TestSearchOrders(t *testing.T) {
 	global.ClientRun(SearchOrders)
 }
+
+func TestUpdateOrder(t *testing.T) {
+	global.ClientRun(UpdateOrder)
+}

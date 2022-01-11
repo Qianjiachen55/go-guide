@@ -9,22 +9,23 @@ import (
 	"github.com/spf13/cast"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"io"
 	"log"
 	"strings"
 	"time"
 )
 
 type OrderServer struct {
-	orderMap map[string]*pb.Order
+	OrderMap map[string]*pb.Order
 }
 
 func (orderServer *OrderServer) AddOrder(ctx context.Context, order *pb.Order) (*wrappers.StringValue, error) {
 	//order.Id = uuid.New().String()
-	if orderServer.orderMap == nil {
-		orderServer.orderMap = make(map[string]*pb.Order)
+	if orderServer.OrderMap == nil {
+		orderServer.OrderMap = make(map[string]*pb.Order)
 	}
 
-	orderServer.orderMap[order.Id] = order
+	orderServer.OrderMap[order.Id] = order
 	log.Println("add success", order.Id)
 	return &wrappers.StringValue{Value: order.Id}, status.New(codes.OK, "").Err()
 }
@@ -32,7 +33,7 @@ func (orderServer *OrderServer) AddOrder(ctx context.Context, order *pb.Order) (
 func (orderServer *OrderServer) GetOrder(ctx context.Context, orderId *wrappers.StringValue) (*pb.Order, error) {
 	log.Println(cast.ToString(time.Now().Format(global.LAYOUT)))
 
-	ord, exist := orderServer.orderMap[orderId.Value]
+	ord, exist := orderServer.OrderMap[orderId.Value]
 	if exist {
 		return ord, status.New(codes.OK, "").Err()
 	}
@@ -43,7 +44,7 @@ func (orderServer *OrderServer) GetOrder(ctx context.Context, orderId *wrappers.
 func (orderServer *OrderServer) SearchOrders(searchQuery *wrappers.StringValue, stream pb.OrderManagement_SearchOrdersServer) error {
 	global.PrintTime()
 	fmt.Println("SearchOrders")
-	for key,order := range orderServer.orderMap{
+	for key,order := range orderServer.OrderMap{
 		log.Print(key,order)
 		for _, itemStr := range order.Items{
 			log.Print(itemStr)
@@ -58,4 +59,22 @@ func (orderServer *OrderServer) SearchOrders(searchQuery *wrappers.StringValue, 
 		}
 	}
 	return nil
+}
+
+func (orderServer *OrderServer) UpdateOrders(stream pb.OrderManagement_UpdateOrdersServer) error {
+
+	ordersStr := "Updated Order IDs :"
+	fmt.Println(ordersStr)
+	for {
+		order,err := stream.Recv()
+		if err == io.EOF{
+			return stream.SendAndClose(&wrappers.StringValue{Value: "Orders processed "+ ordersStr})
+		}
+		//order.Description = "after "+order.Id
+		fmt.Println(order)
+		fmt.Println("--------")
+		orderServer.OrderMap[order.Id] = order
+		log.Println("Order ID ",order.Id, ": Updated")
+		ordersStr += order.Id + ","
+	}
 }

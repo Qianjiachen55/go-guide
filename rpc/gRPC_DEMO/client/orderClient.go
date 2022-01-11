@@ -51,7 +51,7 @@ func SearchOrders()  {
 
 	c := pb.NewOrderManagementClient(conn)
 
-	searchStream, _ := c.SearchOrders(ctx,&wrappers.StringValue{Value: "Google"})
+	searchStream, _ := c.SearchOrders(ctx,&wrappers.StringValue{Value: "jjj"})
 
 	for {
 		searchOrder,err := searchStream.Recv()
@@ -62,4 +62,52 @@ func SearchOrders()  {
 		log.Print("Search Result : ",searchOrder)
 	}
 	fmt.Println("--------")
+}
+
+func UpdateOrder()  {
+	ctx := context.Background()
+	address := "localhost:50051"
+	conn,err := grpc.Dial(address,grpc.WithInsecure())
+	if err != nil{
+		log.Fatalf("did not connect: %v",err)
+	}
+	defer conn.Close()
+
+	c := pb.NewOrderManagementClient(conn)
+	updateStream,err := c.UpdateOrders(ctx)
+
+	if err != nil{
+		log.Fatalf("%v.UpdateOrders(_) = _, %v", c,err)
+	}
+	updOrder1 := pb.Order{
+		Id:          "111",
+		Items:       []string{"nil","jjj"},
+		Description: "111",
+		Price:       55,
+		Destination: "qwfe",
+	}
+
+	if err := updateStream.Send(&updOrder1);err != nil{
+		log.Fatalf("%v.Send(%v) = %v", updateStream,updOrder1,err)
+	}
+
+	updOrder2 := pb.Order{
+		Id:          "222",
+		Items:       []string{"nil","kkk"},
+		Description: "222",
+		Price:       222,
+		Destination: "222",
+	}
+
+	if err := updateStream.Send(&updOrder2);err != nil{
+		log.Fatalf("%v.Send(%v) = %v", updateStream,updOrder2,err)
+	}
+
+	updateRes ,err :=updateStream.CloseAndRecv()
+	if err != nil{
+		log.Fatalf("%v.CloseAndRecv() got error %v, want %v",updateStream,err,nil)
+	}
+	log.Printf("Update orders Res:%s",updateRes)
+	log.Println("DONE")
+
 }

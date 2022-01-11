@@ -2,7 +2,6 @@ syntax="proto3";
 package service;
 
 option go_package="/service";
-import "google/protobuf/api.proto";
 
 message ProdRequest{
   int32 prod_id=1;
@@ -15,11 +14,7 @@ message ProdResponse{
 //get /prod/stock/{}
 
 service ProdService {
-  rpc GetProdStock(ProdRequest) returns (ProdResponse){
-    option (google.api.http)={
-      get:"/v1/prod/(prod_id)"
-    };
-  }
+  rpc GetProdStock(ProdRequest) returns (ProdResponse);
 }
 
 
