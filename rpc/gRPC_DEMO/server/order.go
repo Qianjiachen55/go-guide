@@ -78,3 +78,48 @@ func (orderServer *OrderServer) UpdateOrders(stream pb.OrderManagement_UpdateOrd
 		ordersStr += order.Id + ","
 	}
 }
+
+func (orderServer *OrderServer) ProcessOrders(stream pb.OrderManagement_ProcessOrdersServer)error{
+	var combinedShipmentMap = make(map[string]*pb.CombinedShipment)
+	for {
+		val, err := stream.Recv()
+		if err == io.EOF{
+			//结束
+			for _,comb := range combinedShipmentMap{
+				stream.Send(comb)
+			}
+			return nil
+		}
+		if err != nil{
+			//err
+			log.Println(err)
+			break
+		}
+		// process
+		if val != nil{
+			orderId := val.Value
+			log.Printf("reading order: %+v\n", orderId)
+			
+			dest := orderServer.OrderMap[orderId].Destination
+			
+			shipment, exist := combinedShipmentMap[dest]
+			if exist{
+				ord := orderServer.OrderMap[orderId]
+				shipment.OrdersList = append(shipment.OrdersList,ord)
+				combinedShipmentMap[dest] = shipment
+			}else {
+				comShip := &pb.CombinedShipment{
+					Id:         "cmb - "+(orderServer.OrderMap[orderId]).Destination,
+					Status:     "Processed !",
+					OrdersList: nil,
+				}
+				ord := orderServer.OrderMap[orderId]
+				comShip.OrdersList = append(comShip.OrdersList, ord)
+				combinedShipmentMap[dest] = comShip
+				log.Println(len(comShip.OrdersList),comShip.GetId())
+			}
+			
+		}
+	}
+	return nil
+}
