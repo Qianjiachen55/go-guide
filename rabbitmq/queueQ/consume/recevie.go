@@ -5,21 +5,28 @@ import (
 	"github.com/rabbitmq/amqp091-go"
 	"log"
 	"math/rand"
-	"rabbitmq/util"
+	util2 "rabbitmq/queueQ/util"
+	"time"
 )
 
 
 
 
-func Receive(q amqp091.Queue,target int) {
+func Receive(q amqp091.Queue,target int,duration time.Duration) {
+	if duration==0{
+		duration=1
+	}
 	// 1. 连接
 
-	conn := util.GetConn()
+	conn := util2.GetConn()
 	defer conn.Close()
 
 	// 2. 创建通道
 	ch, err := conn.Channel()
-	util.FailOnError(err, "Failed to open a channel")
+	//prefetchCount : 预取值
+	ch.Qos(3,0,false)
+
+	util2.FailOnError(err, "Failed to open a channel")
 	defer ch.Close()
 
 	// 3. 声明发送的队列，讲消息发布到队列
@@ -44,7 +51,7 @@ func Receive(q amqp091.Queue,target int) {
 		false,
 		nil,
 	)
-	util.FailOnError(err, "Failed to declare a consumer")
+	util2.FailOnError(err, "Failed to declare a consumer")
 
 	forever := make(chan bool)
 	//ch.Ack()
@@ -52,13 +59,14 @@ func Receive(q amqp091.Queue,target int) {
 		for d := range msgs {
 			//log.Printf("%d: Received a message: %s ", target,d.Body)
 			//ch.Ack()
-			if rand.Int()%3==0 {
+			time.Sleep(duration)
+			if rand.Int()%10!=0 {
 				err := d.Ack(false)
-				util.FailOnError(err,fmt.Sprintf("failed to ack msg: %s",d.Body))
+				util2.FailOnError(err,fmt.Sprintf("failed to ack msg: %s",d.Body))
 				fmt.Printf("%d runtine,%s devliver success\n",target,d.Body)
 			}else{
 				err := d.Nack(false,true)
-				util.FailOnError(err,fmt.Sprintf("failed to nack msg: %s",d.Body))
+				util2.FailOnError(err,fmt.Sprintf("failed to nack msg: %s",d.Body))
 				fmt.Printf("%d runtine ,%s resend to queue\n",target,d.Body)
 			}
 

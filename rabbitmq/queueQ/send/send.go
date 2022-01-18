@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/rabbitmq/amqp091-go"
 	"log"
-	"rabbitmq/util"
+	util2 "rabbitmq/queueQ/util"
 	"sync"
 	"time"
 )
@@ -32,18 +32,6 @@ var ID = count{
 
 func Send(ch *amqp091.Channel,q amqp091.Queue, queueName string,msg string) {
 
-
-	// 3. 声明发送的队列，讲消息发布到队列
-	//q, err := ch.QueueDeclare(
-	//	queueName,
-	//	true,
-	//	false,
-	//	false,
-	//	false,
-	//	nil,
-	//)
-	//util.FailOnError(err, "Failed to declare a queue")
-
 	go func() {
 		for {
 			t := time.NewTimer(time.Second/2)
@@ -52,7 +40,7 @@ func Send(ch *amqp091.Channel,q amqp091.Queue, queueName string,msg string) {
 
 				newMsg := Msg{
 					Message: msg,
-					Time:   time.Now().Format(util.LAYOUT),
+					Time:   time.Now().Format(util2.LAYOUT),
 				}
 				ID.m.Lock()
 				ID.Id++
@@ -64,7 +52,7 @@ func Send(ch *amqp091.Channel,q amqp091.Queue, queueName string,msg string) {
 
 				jsonMsg,err := json.Marshal(newMsg)
 				//fmt.Println(string(jsonMsg))
-				util.FailOnError(err,"Marshal Failed!")
+				util2.FailOnError(err,"Marshal Failed!")
 				publish(ch, q,jsonMsg)
 				log.Printf("send success %d", newMsg.Id)
 				//newMsg.m.Unlock()
@@ -84,8 +72,7 @@ func Send(ch *amqp091.Channel,q amqp091.Queue, queueName string,msg string) {
 
 
 func publish(ch *amqp091.Channel, q amqp091.Queue,msg []byte) {
-	//time.Location{}
-	//body := "Hello World! " + time.Now().Format(util.LAYOUT)
+
 	err := ch.Publish(
 		"",
 		q.Name,
@@ -93,9 +80,11 @@ func publish(ch *amqp091.Channel, q amqp091.Queue,msg []byte) {
 		false,
 		amqp091.Publishing{
 			ContentType: "text/plain",
+			DeliveryMode: amqp091.Persistent,
 			Body:        msg,
 		},
 	)
-	util.FailOnError(err, "publish failed")
+	//ch.
+	util2.FailOnError(err, "publish failed")
 }
 
